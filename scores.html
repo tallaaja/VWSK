@@ -61,6 +61,7 @@
     $(document).ready(function(){
 
         $.getJSON("scores.json", function(result){
+            console.log(result);
           $.each(result, function(i, field){
                 $("li").append('<p>' + ( i + 1 ) + ": " + field.name + ": " + field.score + "pts  " + '</p>');               
             

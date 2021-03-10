@@ -1,4 +1,43 @@
 window.onload = function() {
+
+
+    var difficulty = 0;
+    var speed = 0;
+    var name = "name";
+    if (location.search) {
+        var temp = location.search;
+        var res = temp.split("&");
+    
+        //here are the settings values
+        var difficultytext = res[0].toString().split('=').pop();
+        var speedtext = res[1].toString().split('=').pop();
+        var name = res[2].toString().split('=').pop();
+        
+
+        if(speedtext == "Hard"){
+            speed = 20;
+        }
+        else if(speedtext == "Medium"){
+            speed = 15;
+        }
+        else if(speedtext == "Easy"){
+            speed = 10;
+        }
+
+        if(difficultytext == "Hard"){
+            difficulty = 4;
+        }
+        else if(difficultytext == "Medium"){
+            difficulty = 3;
+        }
+        else if(difficultytext == "Easy"){
+            difficulty = 2;
+        }
+    }
+
+    console.log("Difficulty = " + difficulty +", speed = " + speed + " name: " + name);
+
+
     // Get the canvas and context
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
@@ -72,6 +111,7 @@ window.onload = function() {
     
     // Generate a default level with walls
     Level.prototype.generate = function() {
+        var tilecount = 0;
         for (var i=0; i<this.columns; i++) {
             for (var j=0; j<this.rows; j++) {
                 if (i == 0 || i == this.columns-1 ||
@@ -84,6 +124,24 @@ window.onload = function() {
                 }
             }
         }
+
+        //added option to randomize map
+
+        while(tilecount < difficulty){
+
+            var i = Math.floor(Math.random() * (this.columns +1));
+            var j = Math.floor(Math.random() * (this.rows +1));
+
+            if(this.tiles[i][j] == 0){
+                this.tiles[i][j] = 1;
+                tilecount++;
+            }
+            
+            
+            console.log("Tilecount = " + tilecount);
+        }
+
+
     };
     
     
@@ -102,6 +160,8 @@ window.onload = function() {
         this.direction = direction; // Up, Right, Down, Left
         this.speed = speed;         // Movement speed in blocks per second
         this.movedelay = 0;
+
+        console.log(speed);
         
         // Reset the segments and add new ones
         this.segments = [];
@@ -204,7 +264,7 @@ window.onload = function() {
     
     function newGame() {
         // Initialize the snake
-        snake.init(10, 10, 1, 10, 4);
+        snake.init(10, 10, 1, speed, 4);
         
         // Generate the default level
         level.generate();
@@ -348,6 +408,7 @@ window.onload = function() {
                         
                         // Add a point to the score
                         score++;
+                        document.getElementById("score").innerHTML = "Score: " + score;
                     }
                     
 
@@ -390,12 +451,17 @@ window.onload = function() {
             
         // Game over
         if (gameover) {
+
+            //high score stuff
+            //
+
+
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
             context.fillRect(0, 0, canvas.width, canvas.height);
             
             context.fillStyle = "#ffffff";
             context.font = "24px Verdana";
-            drawCenterText("Press any key to start!", 0, canvas.height/2, canvas.width);
+            drawCenterText("Press any key to start! Or hold ESC to go to menu.", 0, canvas.height/2, canvas.width);
         }
     }
     
@@ -516,6 +582,7 @@ window.onload = function() {
     function drawCenterText(text, x, y, width) {
         var textdim = context.measureText(text);
         context.fillText(text, x + (width-textdim.width)/2, y);
+
     }
     
     // Get a random int between low and high, inclusive
@@ -539,8 +606,15 @@ window.onload = function() {
     
     // Keyboard event handler
     function onKeyDown(e) {
-        if (gameover) {
-            tryNewGame();
+        if (gameover) {   
+            if (e.keyCode == 27) {
+                // Pressed esc
+                console.log("pressed esc");
+                window.location.href = "game.html";
+            } else{
+                tryNewGame();
+            }         
+            
         } else {
             if (e.keyCode == 37 || e.keyCode == 65) {
                 // Left or A
