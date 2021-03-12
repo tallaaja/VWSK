@@ -35,10 +35,8 @@ window.onload = function() {
         }
     }
 
-    console.log("Difficulty = " + difficulty +", speed = " + speed + " name: " + name);
 
-
-    // Get the canvas and context
+    
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
     
@@ -194,6 +192,65 @@ window.onload = function() {
         return {x:nextx, y:nexty};
     }
     
+        // snake out of bounds move
+        Snake.prototype.outOfBoundsMove = function(){
+            //up
+            if (snake.direction == 0) {
+                var nextx = this.x + this.directions[this.direction][0];
+                var nexty = this.y + 14;
+                return {x:nextx, y:nexty};
+            }
+            else if (snake.direction == 1) {
+                var nextx = this.x - 19;
+                var nexty = this.y + this.directions[this.direction][1];
+                return {x:nextx, y:nexty};
+            }
+            //bottom
+            else if (snake.direction == 2) {
+                var nextx = this.x + this.directions[this.direction][0];
+                var nexty = this.y - 14;
+                return {x:nextx, y:nexty};
+            }
+    
+            //left
+            else if (snake.direction == 3) {
+                var nextx = this.x + 19 ;
+                var nexty = this.y + this.directions[this.direction][1];
+                return {x:nextx, y:nexty};
+            }
+        }
+        // Move when snake is out of bounds 
+        Snake.prototype.moveOutOfBounds = function() {
+                    // Get the next move and modify the position
+                    var nextmove = this.outOfBoundsMove();
+                    this.x = nextmove.x;
+                    this.y = nextmove.y;
+                
+                    // Get the position of the last segment
+                    var lastseg = this.segments[this.segments.length-1];
+                    var growx = lastseg.x;
+                    var growy = lastseg.y;
+                
+                    // Move segments to the position of the previous segment
+                    for (var i=this.segments.length-1; i>=1; i--) {
+                        this.segments[i].x = this.segments[i-1].x;
+                        this.segments[i].y = this.segments[i-1].y;
+                    }
+                    
+                    // Grow a segment if needed
+                    if (this.growsegments > 0) {
+                        this.segments.push({x:growx, y:growy});
+                        this.growsegments--;
+                    }
+                    
+                    // Move the first segment
+                    this.segments[0].x = this.x;
+                    this.segments[0].y = this.y;
+                    
+                    // Reset movedelay
+                    this.movedelay = 0;
+                
+        }
     // Move the snake in the direction
     Snake.prototype.move = function() {
         // Get the next move and modify the position
@@ -241,7 +298,7 @@ window.onload = function() {
         // Load images
         images = loadImages(["snake-graphics.png"]);
         tileimage = images[0];
-        console.log()
+        
         
         // Add keyboard events
         document.addEventListener("keydown", onKeyDown);
@@ -315,7 +372,7 @@ window.onload = function() {
     function main(tframe) {
         // Request animation frames
         window.requestAnimationFrame(main);
-        console.log(score);
+        
         if (!initialized) {
             // Preloader
             
@@ -415,8 +472,51 @@ window.onload = function() {
                 }
             } else {
                 // Out of bounds
-                //gameover = true;¨
-                snake.move();
+                if (nx == -1) {
+                    nx = 19;
+                } else if (nx == 20) {
+                    nx = 0;
+                } else if (ny == 15) {
+                    ny = 0;
+                } else if (ny == -1) {
+                    ny = 14;
+                }
+                if (level.tiles[nx][ny] == 1) {
+                    // Collision with a wall
+                    gameover = true;
+                }
+                // Collisions with the snake itself
+                for (var i=0; i<snake.segments.length; i++) {
+                    var sx = snake.segments[i].x;
+                    var sy = snake.segments[i].y;
+                    
+                    if (nx == sx && ny == sy) {
+                        // Found a snake part
+                        gameover = true;
+                        break;
+                    }
+                }
+                if (!gameover) {
+                    snake.moveOutOfBounds(); 
+                    // Check collision with an apple
+                    if (level.tiles[nx][ny] == 2) {
+                        // Remove the apple
+                        level.tiles[nx][ny] = 0;
+                        
+                        // Add a new apple
+                        addApple();
+                        
+                        // Grow the snake
+                        snake.grow();
+                        
+                        // Add a point to the score
+                        score++;
+                        document.getElementById("score").innerHTML = "Score: " + score;
+                        
+                    }
+                }
+                
+                
             }
             
             if (gameover) {
@@ -503,6 +603,8 @@ window.onload = function() {
     
     // Draw the snake
     function drawSnake() {
+        var tx = null;
+        var ty = null;
         // Loop over every snake segment
         for (var i=0; i<snake.segments.length; i++) {
             var segment = snake.segments[i];
@@ -511,64 +613,133 @@ window.onload = function() {
             var tilex = segx*level.tilewidth;
             var tiley = segy*level.tileheight;
             
-            // Sprite column and row that gets calculated
-            var tx = 0;
-            var ty = 0;
+            
+            //var tx = 3;
+            //var ty = 0;
             
             if (i == 0) {
                 // Head; Determine the correct image
                 var nseg = snake.segments[i+1]; // Next segment
+                
                 if (segy < nseg.y) {
-                    // Up
-                    tx = 3; ty = 0;
-                } else if (segx > nseg.x) {
-                    // Right
-                    tx = 4; ty = 0;
-                } else if (segy > nseg.y) {
-                    // Down
-                    tx = 4; ty = 1;
-                } else if (segx < nseg.x) {
-                    // Left
-                    tx = 3; ty = 1;
+                    if (segy == 0 && nseg.y == 14) {  // top
+                        
+                        tx = 4; ty = 1;
+                    }
+                    else {
+                        tx = 3; ty = 0;
+                        
+                    }
+                } else if (segx > nseg.x) { // right
+                    
+                    if (segx == 19 && nseg.x == 0){
+                        tx = 3; ty = 1;
+                    }
+                    else {
+                      tx = 4; ty = 0;  
+                    }
+                   
+                } else if (segy > nseg.y) { // down
+                    if(nseg.y == 0 && segy == 14) {
+                        tx = 3; ty = 0;
+                    } 
+                    else {
+                        tx = 4; ty = 1;  
+                    }
+                } else if (segx < nseg.x) { // left 
+                   if (segx == 0 && nseg.x == 19){
+                        tx = 4; ty = 0;
+                    } else {
+                        tx = 3; ty = 1;
+                    }
+                    //Left   
                 }
             } else if (i == snake.segments.length-1) {
                 // Tail; Determine the correct image
                 var pseg = snake.segments[i-1]; // Prev segment
                 if (pseg.y < segy) {
-                    // Up
-                    tx = 3; ty = 2;
+                    if (pseg.y < segy && pseg.y == 0 && segy == 14) { // Up
+                            tx = 4; ty = 3;                         
+                    }else {
+                        tx = 3; ty = 2;
+                    }
                 } else if (pseg.x > segx) {
-                    // Right
-                    tx = 4; ty = 2;
+                    if (pseg.x > segx && pseg.x == 19 && segx == 0) {  // Right
+                        tx = 3; ty = 3;
+                    } else { 
+                    tx = 4; ty = 2;  
+                    }
                 } else if (pseg.y > segy) {
-                    // Down
-                    tx = 4; ty = 3;
+                    if (pseg.y > segy && segy == 0 && pseg.y == 14) {  // Down
+                        tx = 3, ty = 2;
+                    } else {
+                        tx = 4; ty = 3;
+                    }       
                 } else if (pseg.x < segx) {
-                    // Left
-                    tx = 3; ty = 3;
+                    if (pseg.x < segx && pseg.x == 0 && segx == 19) { // left
+                        tx = 4; ty = 2;      
+                    } else {
+                        tx = 3; ty = 3;
+                    } 
                 }
             } else {
                 // Body; Determine the correct image
                 var pseg = snake.segments[i-1]; // Previous segment
                 var nseg = snake.segments[i+1]; // Next segment
-                if (pseg.x < segx && nseg.x > segx || nseg.x < segx && pseg.x > segx) {
-                    // Horizontal Left-Right
-                    tx = 1; ty = 0;
-                } else if (pseg.x < segx && nseg.y > segy || nseg.x < segx && pseg.y > segy) {
-                    // Angle Left-Down
-                    tx = 2; ty = 0;
-                } else if (pseg.y < segy && nseg.y > segy || nseg.y < segy && pseg.y > segy) {
-                    // Vertical Up-Down
+                if (pseg.x < segx && nseg.x > segx || nseg.x < segx && pseg.x > segx) { // Horizontal Left-Right
+                        tx = 1; ty = 0;
+                } else if (pseg.x < segx && nseg.y > segy || nseg.x < segx && pseg.y > segy) { // Angle Left-Down
+                    
+                     if (pseg.x == 0 && segx == 19 || nseg.x == 0 && segx == 19) {
+                        tx = 0; ty = 0;
+                    } else if (segy == 0 && nseg.y == 14 || segy == 0 && pseg.y == 14){
+                        tx = 2; ty = 2;
+                    }
+                    else {
+                        tx = 2; ty = 0;
+                    }
+                } else if (pseg.y < segy && nseg.y > segy || nseg.y < segy && pseg.y > segy) { // Vertical Up-Down  
                     tx = 2; ty = 1;
-                } else if (pseg.y < segy && nseg.x < segx || nseg.y < segy && pseg.x < segx) {
-                    // Angle Top-Left
-                    tx = 2; ty = 2;
-                } else if (pseg.x > segx && nseg.y < segy || nseg.x > segx && pseg.y < segy) {
-                    // Angle Right-Up
-                    tx = 0; ty = 1;
-                } else if (pseg.y > segy && nseg.x > segx || nseg.y > segy && pseg.x > segx) {
-                    // Angle Down-Right
-                    tx = 0; ty = 0;
+                } else if (pseg.y < segy && nseg.x < segx || nseg.y < segy && pseg.x < segx) { // Angle Top-Left
+                    if (pseg.x == 0 && segx == 19 || nseg.x == 0 && segx == 19) { 
+                        tx = 0; ty = 1;
+                    }  else if (segy == 14 && nseg.y == 0 || segy == 14 && pseg.y == 0){
+                        tx = 2; ty = 0;
+                    }  else  {
+                        tx = 2; ty = 2;
+                    }
+                } else if (pseg.x > segx && nseg.y < segy || nseg.x > segx && pseg.y < segy) {  // Angle Right-Up
+                      if (segx == 0 && pseg.x == 0 && nseg.x == 19 || pseg.x == 19 && segx == 0){ 
+                            tx = 2; ty = 2;
+                    } else if (segy == 14 && nseg.y == 0 || segy == 14 && pseg.y == 0){
+                        tx = 0; ty = 0;
+                    }  else {
+                        tx = 0; ty = 1;  
+                    }
+                } else if (pseg.y > segy && nseg.x > segx || nseg.y > segy && pseg.x > segx) { // Angle Down-Right
+                    if (segx == 0 && pseg.x == 0 && nseg.x == 19 || pseg.x == 19 && segx == 0) {  
+                        tx = 2; ty = 0;
+                    } else if (segy == 0 && nseg.y == 14 || segy == 0 && pseg.y == 14){
+                        tx = 0; ty = 1;
+                    }  else {
+                        tx = 0; ty = 0;
+                    }
+                } else if (pseg.y > segy && nseg.y == 14 && segy == 0){
+                    tx = 2; ty = 1;
+                } else if (pseg.y < segy && nseg.y == 0 && segy == 14){
+                    tx = 2; ty = 1;
+                } else if (pseg.x < segx && nseg.x == 0 && segx == 19){
+                    tx = 1; ty = 0;
+                } else if (pseg.x > segx && nseg.x == 19 && segx == 0){
+                    tx = 1; ty = 0;
+                } else if (pseg.x == 0 && segx == 19) {
+                    tx = 1; ty = 0;
+                } else if (pseg.x == 19 && segx == 0) {
+                    tx = 1; ty = 0;
+                } else if (pseg.y == 14 && segy == 0) {
+                    tx = 2; ty = 1;
+                } else if (pseg.y == 0 && segy == 14) {
+                    tx = 2; ty = 1;
                 }
             }
             
