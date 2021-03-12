@@ -502,6 +502,10 @@ window.onload = function() {
                     if (level.tiles[nx][ny] == 2) {
                         // Remove the apple
                         level.tiles[nx][ny] = 0;
+
+                        //play sound effect 
+                        mySound = new sound("bite1.mp3");
+                        mySound.play();
                         
                         // Add a new apple
                         addApple();
@@ -519,11 +523,12 @@ window.onload = function() {
                         addScore();
                         document.getElementById("score").innerHTML = "Score: " + score;
                     }
-
+                    // Check collision with star
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
-
+                        mySound2 = new sound2("bite3.mp3");
+                        mySound2.play();
                         invertColors();
                         
                         powerup = 1;               
@@ -966,6 +971,36 @@ window.onload = function() {
         head.appendChild(style);
         };
     
+        function sound(src) {
+            this.sound = document.createElement("audio");
+            this.sound.src = src;
+            this.sound.setAttribute("preload", "auto");
+            this.sound.setAttribute("controls", "none");
+            this.sound.style.display = "none";
+            document.body.appendChild(this.sound);
+            this.play = function(){
+                this.sound.play();
+            }
+            this.stop = function(){
+                this.sound.pause();
+            }    
+        }
+
+        function sound2(src) {
+            this.sound = document.createElement("audio");
+            this.sound.src = src;
+            this.sound.setAttribute("preload", "auto");
+            this.sound.setAttribute("controls", "none");
+            this.sound.style.display = "none";
+            document.body.appendChild(this.sound);
+            this.play = function(){
+                this.sound.play();
+            }
+            this.stop = function(){
+                this.sound.pause();
+            }    
+        }
+
     
     // Call init to start the game
     init();
