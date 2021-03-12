@@ -289,6 +289,9 @@ window.onload = function() {
     var level = new Level(20, 15, 32, 32);
     
     // Variables
+    var ispowerspawned = 0;
+    var count=5;
+    var powerup = 0;
     var score = 0;              // Score
     var gameover = true;        // Game is over
     var gameovertime = 1;       // How long we have been game over
@@ -368,6 +371,38 @@ window.onload = function() {
             }
         }
     }
+
+    // Add an power up to the level at an empty position
+    function addPowerUp() {
+        // Loop until we have a valid apple
+        var valid = false;
+        while (!valid) {
+            // Get a random position
+            var ax = randRange(0, level.columns-1);
+            var ay = randRange(0, level.rows-1);
+            
+            // Make sure the snake doesn't overlap the new apple
+            var overlap = false;
+            for (var i=0; i<snake.segments.length; i++) {
+                // Get the position of the current snake segment
+                var sx = snake.segments[i].x;
+                var sy = snake.segments[i].y;
+
+                // Check overlap
+                if (ax == sx && ay == sy) {
+                    overlap = true;
+                    break;
+                }
+            }
+            
+            // Tile must be empty
+            if (!overlap && level.tiles[ax][ay] == 0) {
+                // Add an apple at the tile position
+                level.tiles[ax][ay] = 3;
+                valid = true;
+            }
+        }
+    }
     
     // Main loop
     function main(tframe) {
@@ -418,6 +453,16 @@ window.onload = function() {
             gameovertime += dt;
         }
     }
+
+    function addScore(){
+        if(powerup == 1){
+            score = score +2;
+        }
+        else{
+            score++;
+        }
+
+    }
     
     function updateGame(dt) {
         // Move the snake
@@ -460,15 +505,47 @@ window.onload = function() {
                         
                         // Add a new apple
                         addApple();
-                        
+                        //Power up
+                        var seed = Math.floor(Math.random() * 101);
+                        console.log(seed);
+                        if(seed < 80 && powerup == 0 && ispowerspawned == 0){
+                            addPowerUp();
+                            ispowerspawned = 1;
+                        }
                         // Grow the snake
                         snake.grow();
                         
                         // Add a point to the score
-                        score++;
+                        addScore();
                         document.getElementById("score").innerHTML = "Score: " + score;
                     }
-                    
+
+                    if(level.tiles[nx][ny]==3){
+                        level.tiles[nx][ny] = 0;
+                        ispowerspawned = 0;
+
+                        invertColors();
+                        
+                        powerup = 1;               
+                        var count=5;
+
+                        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+
+                        function timer()
+                        {
+                        count=count-1;
+                        if (count <= 0)
+                        {
+                            clearInterval(counter);
+                            invertColors();
+                            powerup = 0;
+                            //counter ended, do something here
+                            return;
+                        }
+
+                        //Do code for showing the number of seconds here
+                        }
+                    }                    
 
                 }
             } else {
@@ -506,18 +583,46 @@ window.onload = function() {
                         
                         // Add a new apple
                         addApple();
-                        
+                        //Power up
+                        var seed = Math.floor(Math.random() * 101);
+                        console.log(seed);
+                        if(seed < 80 && powerup == 0 && ispowerspawned == 0){
+                            addPowerUp();
+                            ispowerspawned = 1;
+                        }
                         // Grow the snake
                         snake.grow();
                         
                         // Add a point to the score
-                        score++;
+                        addScore();
                         document.getElementById("score").innerHTML = "Score: " + score;
+                    }
+
+                    if(level.tiles[nx][ny]==3){
+                        level.tiles[nx][ny] = 0;
+
+                        invertColors();
+                        powerup = 1;
+                        var count=5;
+
+                        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
                         
+                        function timer()
+                        {
+                          count=count-1;
+                          if (count <= 0)
+                          {
+                             clearInterval(counter);
+                             invertColors();
+                             powerup = 0;
+                             //counter ended, do something here
+                             return;
+                          }
+                        
+                          //Do code for showing the number of seconds here
+                        }
                     }
                 }
-                
-                
             }
             
             if (gameover) {
@@ -552,6 +657,7 @@ window.onload = function() {
             
         // Game over
         if (gameover) {
+            ispowerspawned = 0;
             //var hs = document.getElementById("highscore").innerHTML;
             //high score stuff
             //
@@ -599,6 +705,20 @@ window.onload = function() {
                     // Draw the apple image
                     var tx = 0;
                     var ty = 3;
+                    var tilew = 64;
+                    var tileh = 64;
+                    context.drawImage(tileimage, tx*tilew, ty*tileh, tilew, tileh, tilex, tiley, level.tilewidth, level.tileheight);
+                }
+                else if (tile == 3){
+                    // Star
+                    
+                    // Draw star background
+                    context.fillStyle = "#f7e697";
+                    context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+                    
+                    // Draw the apple image
+                    var tx = 0;
+                    var ty = 2;
                     var tilew = 64;
                     var tileh = 64;
                     context.drawImage(tileimage, tx*tilew, ty*tileh, tilew, tileh, tilex, tiley, level.tilewidth, level.tileheight);
@@ -817,6 +937,34 @@ window.onload = function() {
             
         }
     }
+
+
+
+    function invertColors() { 
+        // the css we are going to inject
+        var css = 'html {-webkit-filter: invert(100%);' +
+            '-moz-filter: invert(100%);' + 
+            '-o-filter: invert(100%);' + 
+            '-ms-filter: invert(100%); }',
+        
+        head = document.getElementsByTagName('head')[0],
+        style = document.createElement('style');
+        
+        // a hack, so you can "invert back" clicking the bookmarklet again
+        if (!window.counter) { window.counter = 1;} else  { window.counter ++;
+        if (window.counter % 2 == 0) { var css ='html {-webkit-filter: invert(0%); -moz-filter:    invert(0%); -o-filter: invert(0%); -ms-filter: invert(0%); }'}
+         };
+        
+        style.type = 'text/css';
+        if (style.styleSheet){
+        style.styleSheet.cssText = css;
+        } else {
+        style.appendChild(document.createTextNode(css));
+        }
+        
+        //injecting the css to the head
+        head.appendChild(style);
+        };
     
     
     // Call init to start the game
