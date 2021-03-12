@@ -3,7 +3,6 @@ window.onload = function() {
 
     var difficulty = 0;
     var speed = 0;
-    var name = "name";
     if (location.search) {
         var temp = location.search;
         var res = temp.split("&");
@@ -11,7 +10,6 @@ window.onload = function() {
         //here are the settings values
         var difficultytext = res[0].toString().split('=').pop();
         var speedtext = res[1].toString().split('=').pop();
-        var name = res[2].toString().split('=').pop();
         
 
         if(speedtext == "Hard"){
@@ -39,6 +37,9 @@ window.onload = function() {
     
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
+
+    //highscore variable
+    var highscore = 0;
     
     // Timing and frames per second
     var lastframe = 0;
@@ -551,11 +552,16 @@ window.onload = function() {
             
         // Game over
         if (gameover) {
-
+            //var hs = document.getElementById("highscore").innerHTML;
             //high score stuff
             //
+            if(highscore < score){
+                document.getElementById("highscore").innerHTML = "Highscore: " + score;
+                highscore = score;
+            }
 
-
+            
+            document.getElementById("score").innerHTML = "Score: 0";
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
             context.fillRect(0, 0, canvas.width, canvas.height);
             
