@@ -527,9 +527,14 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
+<<<<<<< Updated upstream
                         mySound2 = new sound2("bite3.mp3");
                         mySound2.play();
                         invertColors();
+=======
+
+                        invertColors(-1);
+>>>>>>> Stashed changes
                         
                         powerup = 1;               
                         var count=5;
@@ -542,7 +547,6 @@ window.onload = function() {
                         if (count <= 0)
                         {
                             clearInterval(counter);
-                            invertColors();
                             powerup = 0;
                             //counter ended, do something here
                             return;
@@ -589,9 +593,7 @@ window.onload = function() {
                         // Add a new apple
                         addApple();
                         //Power up
-                        var seed = Math.floor(Math.random() * 101);
                         console.log(seed);
-                        if(seed < 80 && powerup == 0 && ispowerspawned == 0){
                             addPowerUp();
                             ispowerspawned = 1;
                         }
@@ -606,7 +608,6 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
 
-                        invertColors();
                         powerup = 1;
                         var count=5;
 
@@ -618,7 +619,6 @@ window.onload = function() {
                           if (count <= 0)
                           {
                              clearInterval(counter);
-                             invertColors();
                              powerup = 0;
                              //counter ended, do something here
                              return;
@@ -945,12 +945,10 @@ window.onload = function() {
 
 
 
-    function invertColors() { 
         // the css we are going to inject
         var css = 'html {-webkit-filter: invert(100%);' +
             '-moz-filter: invert(100%);' + 
             '-o-filter: invert(100%);' + 
-            '-ms-filter: invert(100%); }',
         
         head = document.getElementsByTagName('head')[0],
         style = document.createElement('style');
