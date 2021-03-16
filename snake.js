@@ -34,9 +34,13 @@ window.onload = function() {
     }
 
 
+    bloodImage = new Image();
+    bloodImage.src = "blood.png";
     
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
+    var canvas2 = document.getElementById("foreground")
+    var context2 = canvas2.getContext("2d");
 
     powerupMusic = new powerUpAudio("music_zapsplat_win_city.mp3");
     backgroundMusic = new backGroundAudio("bensound-perception.mp3");    
@@ -332,6 +336,7 @@ window.onload = function() {
     // Check if we can start a new game
     function tryNewGame() {
         if (gameovertime > gameoverdelay) {
+            context2.clearRect(0, 0, canvas.width, canvas.height);
             newGame();
             gameover = false;
         }
@@ -524,7 +529,8 @@ window.onload = function() {
                 if (level.tiles[nx][ny] == 1) {
                     stone1 = new sound("stone1.mp3");
                     stone1.play();
-                    // Collision with a wall
+                    drawBlood();
+                    // Collision with a stone
                     gameover = true;
                 }
                 
@@ -537,6 +543,7 @@ window.onload = function() {
                         // Found a snake part
                         stone1 = new sound("stone1.mp3");
                         stone1.play();
+                        drawBlood();
                         gameover = true;
                         break;
                     }
@@ -665,6 +672,7 @@ window.onload = function() {
                     // Collision with a wall
                     stone1 = new sound("stone1.mp3");
                     stone1.play();
+                    drawBlood();
                     gameover = true;
                 }
                 // Collisions with the snake itself
@@ -673,7 +681,9 @@ window.onload = function() {
                     var sy = snake.segments[i].y;
                     
                     if (nx == sx && ny == sy) {
-
+                        stone1 = new sound("stone1.mp3");
+                        stone1.play();
+                        drawBlood();
                         // Found a snake part
                         gameover = true;
                         break;
@@ -831,9 +841,6 @@ window.onload = function() {
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
             context.fillRect(0, 0, canvas.width, canvas.height);
             
-            context.fillStyle = "#ffffff";
-            context.font = "24px Verdana";
-            drawCenterText("Press any key to start! Or hold ESC to go to menu.", 0, canvas.height/2, canvas.width);
         }
     }
     
@@ -1205,6 +1212,14 @@ window.onload = function() {
             this.sound.pause();
         }    
     }
+    function drawBlood(){
+        context2.drawImage(bloodImage,20,0);
+        context2.fillStyle = "white";
+        context2.textAlign = "center";
+        context2.font = "24px Verdana";
+        
+        context2.fillText("Press any key to start! Or hold ESC to go to menu", canvas2.width/2, canvas2.height/2); 
+    } 
 
     
     // Call init to start the game
