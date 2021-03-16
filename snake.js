@@ -512,6 +512,8 @@ window.onload = function() {
             
             if (nx >= 0 && nx < level.columns && ny >= 0 && ny < level.rows) {
                 if (level.tiles[nx][ny] == 1) {
+                    stone1 = new sound2("stone1.mp3");
+                    stone1.play();
                     // Collision with a wall
                     gameover = true;
                 }
@@ -523,6 +525,8 @@ window.onload = function() {
                     
                     if (nx == sx && ny == sy) {
                         // Found a snake part
+                        stone1 = new sound2("stone1.mp3");
+                        stone1.play();
                         gameover = true;
                         break;
                     }
@@ -540,8 +544,8 @@ window.onload = function() {
                         level.tiles[nx][ny] = 0;
 
                         //play sound effect 
-                        mySound = new sound("bite1.mp3");
-                        mySound.play();
+                        bite1 = new sound("bite1.mp3");
+                        bite1.play();
                         
                         // Add a new apple
                         addApple();
@@ -568,7 +572,7 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
-                        mySound2 = new sound2("bite3.mp3");
+                        mySound2 = new sound2("star.mp3");
                         mySound2.play();
 
                         //invertColors(false);
@@ -596,7 +600,7 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==4){
                         level.tiles[nx][ny] = 0;
                         shroomisspawned = 0;
-                        mySound2 = new sound2("bite3.mp3");
+                        mySound2 = new sound2("shroom.mp3");
                         mySound2.play();
 
                         invertColors(false);
@@ -636,6 +640,8 @@ window.onload = function() {
                 }
                 if (level.tiles[nx][ny] == 1) {
                     // Collision with a wall
+                    stone1 = new sound2("stone1.mp3");
+                    stone1.play();
                     gameover = true;
                 }
                 // Collisions with the snake itself
@@ -644,6 +650,7 @@ window.onload = function() {
                     var sy = snake.segments[i].y;
                     
                     if (nx == sx && ny == sy) {
+
                         // Found a snake part
                         gameover = true;
                         break;
@@ -806,9 +813,15 @@ window.onload = function() {
                     context.fillStyle = "#f7e697";
                     context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
                 } else if (tile == 1) {
-                    // Wall
-                    context.fillStyle = "#bcae76";
+                    // Stones
+                    context.fillStyle = "#f7e697";
                     context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+                    // draw stone 
+                    var tx = 1;
+                    var ty = 3;
+                    var tilew = 64;
+                    var tileh = 64;
+                    context.drawImage(tileimage, tx*tilew, ty*tileh, tilew, tileh, tilex, tiley, level.tilewidth, level.tileheight);
                 } else if (tile == 2) {
                     // Apple
                     
@@ -1138,6 +1151,20 @@ window.onload = function() {
         }    
     }
 
+    function stoneSound(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
+        }
+        this.stop = function(){
+            this.sound.pause();
+        }    
+    }    
     
     // Call init to start the game
     init();
