@@ -36,11 +36,16 @@ window.onload = function() {
 
     bloodImage = new Image();
     bloodImage.src = "blood.png";
+
+    starEffectImage = new Image();
+    starEffectImage.src = "star.png";
     
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
     var canvas2 = document.getElementById("foreground")
     var context2 = canvas2.getContext("2d");
+    var starCanvas = document.getElementById("stareffect")
+    var starCanvasContext = starCanvas.getContext("2d");
 
     powerupMusic = new powerUpAudio("music_zapsplat_win_city.mp3");
     backgroundMusic = new backGroundAudio("bensound-perception.mp3");    
@@ -588,6 +593,8 @@ window.onload = function() {
                     }
                     // Check collision with star
                     if(level.tiles[nx][ny]==3){
+                        //start effect
+                        starEffect();
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
                         mySound2 = new sound("star.mp3");
@@ -611,6 +618,7 @@ window.onload = function() {
                         count=count-1;
                         if (count <= 0)
                         {
+                            starCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
                             backgroundMusic.play();
                             powerupMusic.stop();
                             clearInterval(counter);
@@ -721,6 +729,9 @@ window.onload = function() {
                     }
                 // Check collision with star
                     if(level.tiles[nx][ny]==3){
+                        //start effect
+                        starEffect();
+
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
                         mySound2 = new sound("bite3.mp3");
@@ -742,6 +753,7 @@ window.onload = function() {
                         count=count-1;
                         if (count <= 0)
                         {
+                            starCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
                             powerupMusic.stop();
                             backgroundMusic.play();
                             clearInterval(counter);
@@ -1188,6 +1200,7 @@ window.onload = function() {
         this.sound.style.display = "none";
         this.sound.volume = 0.1;
         document.body.appendChild(this.sound);
+        this.sound.loop = true;
         this.play = function(){
             this.sound.play();
         }
@@ -1218,7 +1231,26 @@ window.onload = function() {
         context2.textAlign = "center";
         context2.font = "24px Verdana";
         
-        context2.fillText("Press any key to start! Or hold ESC to go to menu", canvas2.width/2, canvas2.height/2); 
+        context2.fillText("Press any key to start!", canvas2.width/2, canvas2.height/2); 
+    } 
+
+    function starEffect(){
+
+
+        starCanvasContext.globalAlpha = 0.5
+        starCanvasContext.drawImage(starEffectImage,67,-10);
+
+
+        var img = document.getElementById('stareffect');
+        var interval = window.setInterval(function(){
+            if(img.style.visibility == 'hidden'){
+                img.style.visibility = 'visible';
+            }else{
+                img.style.visibility = 'hidden';
+            }
+        }, 500); //the 1000 here is milliseconds and determines how often the interval should be run.
+
+
     } 
 
     
