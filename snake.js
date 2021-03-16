@@ -338,6 +338,7 @@ window.onload = function() {
         if (gameovertime > gameoverdelay) {
             context2.clearRect(0, 0, canvas.width, canvas.height);
             newGame();
+            backgroundMusic.play();
             gameover = false;
         }
     }
@@ -557,8 +558,6 @@ window.onload = function() {
                     
                     // Check collision with an apple
                     if (level.tiles[nx][ny] == 2) {                        
-                        backgroundMusic.volume = 0.1;
-                        backgroundMusic.play();
                         // Remove the apple
                         level.tiles[nx][ny] = 0;
 
@@ -693,8 +692,6 @@ window.onload = function() {
                     snake.moveOutOfBounds(); 
                     // Check collision with an apple
                     if (level.tiles[nx][ny] == 2) {
-                        backgroundMusic.volume = 0.1;
-                        backgroundMusic.play();
                         // Remove the apple
                         level.tiles[nx][ny] = 0;
                         
@@ -835,7 +832,8 @@ window.onload = function() {
                 document.getElementById("highscore").innerHTML = "Highscore: " + score;
                 highscore = score;
             }
-
+            backgroundMusic.stop();
+            powerupMusic.stop();
             
             document.getElementById("score").innerHTML = "Score: 0";
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
@@ -1195,6 +1193,7 @@ window.onload = function() {
         }
         this.stop = function(){
             this.sound.pause();
+            this.sound.currentTime = 0;
         }    
     }
     function powerUpAudio(src) {
@@ -1210,6 +1209,7 @@ window.onload = function() {
         }
         this.stop = function(){
             this.sound.pause();
+            this.sound.currentTime = 0;
         }    
     }
     function drawBlood(){
