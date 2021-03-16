@@ -38,6 +38,8 @@ window.onload = function() {
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
 
+    powerupMusic = new powerUpAudio("music_zapsplat_win_city.mp3");
+    backgroundMusic = new backGroundAudio("bensound-perception.mp3");    
     //highscore variable
     var highscore = 0;
     
@@ -520,7 +522,7 @@ window.onload = function() {
             
             if (nx >= 0 && nx < level.columns && ny >= 0 && ny < level.rows) {
                 if (level.tiles[nx][ny] == 1) {
-                    stone1 = new sound2("stone1.mp3");
+                    stone1 = new sound("stone1.mp3");
                     stone1.play();
                     // Collision with a wall
                     gameover = true;
@@ -533,7 +535,7 @@ window.onload = function() {
                     
                     if (nx == sx && ny == sy) {
                         // Found a snake part
-                        stone1 = new sound2("stone1.mp3");
+                        stone1 = new sound("stone1.mp3");
                         stone1.play();
                         gameover = true;
                         break;
@@ -547,7 +549,9 @@ window.onload = function() {
                     snake.move();
                     
                     // Check collision with an apple
-                    if (level.tiles[nx][ny] == 2) {
+                    if (level.tiles[nx][ny] == 2) {                        
+                        backgroundMusic.volume = 0.1;
+                        backgroundMusic.play();
                         // Remove the apple
                         level.tiles[nx][ny] = 0;
 
@@ -580,8 +584,11 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
-                        mySound2 = new sound2("star.mp3");
+                        mySound2 = new sound("star.mp3");
                         mySound2.play();
+                        powerupMusic.play();
+                        backgroundMusic.stop();
+
 
                         //invertColors(false);
                         
@@ -598,6 +605,8 @@ window.onload = function() {
                         count=count-1;
                         if (count <= 0)
                         {
+                            backgroundMusic.play();
+                            powerupMusic.stop();
                             clearInterval(counter);
                             //invertColors(true);
                             powerup = 0;
@@ -611,7 +620,7 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==4){
                         level.tiles[nx][ny] = 0;
                         shroomisspawned = 0;
-                        mySound2 = new sound2("shroom.mp3");
+                        mySound2 = new sound("shroom.mp3");
                         mySound2.play();
 
                         invertColors(false);
@@ -654,7 +663,7 @@ window.onload = function() {
                 }
                 if (level.tiles[nx][ny] == 1) {
                     // Collision with a wall
-                    stone1 = new sound2("stone1.mp3");
+                    stone1 = new sound("stone1.mp3");
                     stone1.play();
                     gameover = true;
                 }
@@ -674,9 +683,14 @@ window.onload = function() {
                     snake.moveOutOfBounds(); 
                     // Check collision with an apple
                     if (level.tiles[nx][ny] == 2) {
+                        backgroundMusic.volume = 0.1;
+                        backgroundMusic.play();
                         // Remove the apple
                         level.tiles[nx][ny] = 0;
                         
+                        //play sound effect 
+                        bite1 = new sound("bite1.mp3");
+                        bite1.play();
                         // Add a new apple
                         addApple();
                         //Power up
@@ -702,9 +716,10 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
-                        mySound2 = new sound2("bite3.mp3");
+                        mySound2 = new sound("bite3.mp3");
                         mySound2.play();
-
+                        powerupMusic.play();
+                        backgroundMusic.stop();
                         //invertColors(false);
                         
                         powerup = 1;               
@@ -720,6 +735,8 @@ window.onload = function() {
                         count=count-1;
                         if (count <= 0)
                         {
+                            powerupMusic.stop();
+                            backgroundMusic.play();
                             clearInterval(counter);
                             //invertColors(true);
                             powerup = 0;
@@ -733,7 +750,7 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==4){
                         level.tiles[nx][ny] = 0;
                         shroomisspawned = 0;
-                        mySound2 = new sound2("bite3.mp3");
+                        mySound2 = new sound("bite3.mp3");
                         mySound2.play();
 
                         invertColors(false);
@@ -1149,6 +1166,37 @@ window.onload = function() {
         this.sound.setAttribute("preload", "auto");
         this.sound.setAttribute("controls", "none");
         this.sound.style.display = "none";
+        this.sound.volume = 0.8;
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
+        }
+        this.stop = function(){
+            this.sound.pause();
+        }    
+    }
+    function backGroundAudio(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        this.sound.volume = 0.1;
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
+        }
+        this.stop = function(){
+            this.sound.pause();
+        }    
+    }
+    function powerUpAudio(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        this.sound.volume = 0.5;
         document.body.appendChild(this.sound);
         this.play = function(){
             this.sound.play();
@@ -1158,35 +1206,6 @@ window.onload = function() {
         }    
     }
 
-    function sound2(src) {
-        this.sound = document.createElement("audio");
-        this.sound.src = src;
-        this.sound.setAttribute("preload", "auto");
-        this.sound.setAttribute("controls", "none");
-        this.sound.style.display = "none";
-        document.body.appendChild(this.sound);
-        this.play = function(){
-            this.sound.play();
-        }
-        this.stop = function(){
-            this.sound.pause();
-        }    
-    }
-
-    function stoneSound(src) {
-        this.sound = document.createElement("audio");
-        this.sound.src = src;
-        this.sound.setAttribute("preload", "auto");
-        this.sound.setAttribute("controls", "none");
-        this.sound.style.display = "none";
-        document.body.appendChild(this.sound);
-        this.play = function(){
-            this.sound.play();
-        }
-        this.stop = function(){
-            this.sound.pause();
-        }    
-    }    
     
     // Call init to start the game
     init();
