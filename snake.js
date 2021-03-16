@@ -58,6 +58,8 @@ window.onload = function() {
     var loadtotal = 0;
     var preloaded = false;
     
+    var flipped = false;
+    
     // Load images
     function loadImages(imagefiles) {
         // Initialize variables
@@ -290,8 +292,10 @@ window.onload = function() {
     
     // Variables
     var ispowerspawned = 0;
+    var shroomisspawned = 0;
     var count=5;
     var powerup = 0;
+    var shroomup = 0;
     var score = 0;              // Score
     var gameover = true;        // Game is over
     var gameovertime = 1;       // How long we have been game over
@@ -399,6 +403,38 @@ window.onload = function() {
             if (!overlap && level.tiles[ax][ay] == 0) {
                 // Add an apple at the tile position
                 level.tiles[ax][ay] = 3;
+                valid = true;
+            }
+        }
+    }
+
+    // Add a shroom to the level at an empty position
+    function addShroom() {
+        // Loop until we have a valid shroom
+        var valid = false;
+        while (!valid) {
+            // Get a random position
+            var ax = randRange(0, level.columns-1);
+            var ay = randRange(0, level.rows-1);
+            
+            // Make sure the snake doesn't overlap the new shroom
+            var overlap = false;
+            for (var i=0; i<snake.segments.length; i++) {
+                // Get the position of the current snake segment
+                var sx = snake.segments[i].x;
+                var sy = snake.segments[i].y;
+
+                // Check overlap
+                if (ax == sx && ay == sy) {
+                    overlap = true;
+                    break;
+                }
+            }
+            
+            // Tile must be empty
+            if (!overlap && level.tiles[ax][ay] == 0) {
+                // Add an shroom at the tile position
+                level.tiles[ax][ay] = 4;
                 valid = true;
             }
         }
@@ -511,10 +547,15 @@ window.onload = function() {
                         addApple();
                         //Power up
                         var seed = Math.floor(Math.random() * 101);
+                        var seedShroom = Math.floor(Math.random() * 101);
                         console.log(seed);
                         if(seed < 80 && powerup == 0 && ispowerspawned == 0){
                             addPowerUp();
                             ispowerspawned = 1;
+                        }
+                        if(seedShroom < 80 && shroomup == 0 && shroomisspawned == 0){
+                            addShroom();
+                            shroomisspawned = 1;
                         }
                         // Grow the snake
                         snake.grow();
@@ -527,14 +568,10 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
-<<<<<<< Updated upstream
                         mySound2 = new sound2("bite3.mp3");
                         mySound2.play();
-                        invertColors();
-=======
 
-                        invertColors(-1);
->>>>>>> Stashed changes
+                        //invertColors(false);
                         
                         powerup = 1;               
                         var count=5;
@@ -547,6 +584,7 @@ window.onload = function() {
                         if (count <= 0)
                         {
                             clearInterval(counter);
+                            //invertColors(true);
                             powerup = 0;
                             //counter ended, do something here
                             return;
@@ -554,7 +592,35 @@ window.onload = function() {
 
                         //Do code for showing the number of seconds here
                         }
-                    }                    
+                    }
+                    if(level.tiles[nx][ny]==4){
+                        level.tiles[nx][ny] = 0;
+                        shroomisspawned = 0;
+                        mySound2 = new sound2("bite3.mp3");
+                        mySound2.play();
+
+                        invertColors(false);
+                        
+                        shroomup = 1;               
+                        var count=5;
+
+                        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+
+                        function timer()
+                        {
+                        count=count-1;
+                        if (count <= 0)
+                        {
+                            clearInterval(counter);
+                            invertColors(true);
+                            shroomup = 0;
+                            //counter ended, do something here
+                            return;
+                        }
+
+                        //Do code for showing the number of seconds here
+                        }
+                    }                   
 
                 }
             } else {
@@ -593,9 +659,16 @@ window.onload = function() {
                         // Add a new apple
                         addApple();
                         //Power up
+                        var seedPower = Math.floor(Math.random() * 101);
+                        var seedShroom = Math.floor(Math.random() * 101);
                         console.log(seed);
+                        if(seedPower < 80 && powerup == 0 && ispowerspawned == 0){
                             addPowerUp();
                             ispowerspawned = 1;
+                        }
+                        if(seedShroom < 80 && shroomup == 0 && shroomisspawned == 0){
+                            addShroom();
+                            shroomisspawned = 1;
                         }
                         // Grow the snake
                         snake.grow();
@@ -604,29 +677,64 @@ window.onload = function() {
                         addScore();
                         document.getElementById("score").innerHTML = "Score: " + score;
                     }
-
+                // Check collision with star
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
+                        ispowerspawned = 0;
+                        mySound2 = new sound2("bite3.mp3");
+                        mySound2.play();
 
-                        powerup = 1;
+                        //invertColors(false);
+                        
+                        powerup = 1;               
                         var count=5;
 
                         var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
-                        
+
                         function timer()
                         {
-                          count=count-1;
-                          if (count <= 0)
-                          {
-                             clearInterval(counter);
-                             powerup = 0;
-                             //counter ended, do something here
-                             return;
-                          }
-                        
-                          //Do code for showing the number of seconds here
+                        count=count-1;
+                        if (count <= 0)
+                        {
+                            clearInterval(counter);
+                            //invertColors(true);
+                            powerup = 0;
+                            //counter ended, do something here
+                            return;
                         }
-                    }
+
+                        //Do code for showing the number of seconds here
+                        }
+                    } 
+                    if(level.tiles[nx][ny]==4){
+                        level.tiles[nx][ny] = 0;
+                        shroomisspawned = 0;
+                        mySound2 = new sound2("bite3.mp3");
+                        mySound2.play();
+
+                        invertColors(false);
+                        
+                        shroomup = 1;               
+                        var count=5;
+
+                        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+
+                        function timer()
+                        {
+                        count=count-1;
+                        if (count <= 0)
+                        {
+                            clearInterval(counter);
+                            invertColors(true);
+                            shroomup = 0;
+                            //counter ended, do something here
+                            return;
+                        }
+
+                        //Do code for showing the number of seconds here
+                        }
+                    }                    
+
                 }
             }
             
@@ -663,6 +771,7 @@ window.onload = function() {
         // Game over
         if (gameover) {
             ispowerspawned = 0;
+            shroomisspawned = 0;
             //var hs = document.getElementById("highscore").innerHTML;
             //high score stuff
             //
@@ -723,6 +832,20 @@ window.onload = function() {
                     
                     // Draw the apple image
                     var tx = 0;
+                    var ty = 2;
+                    var tilew = 64;
+                    var tileh = 64;
+                    context.drawImage(tileimage, tx*tilew, ty*tileh, tilew, tileh, tilex, tiley, level.tilewidth, level.tileheight);
+                }
+                else if (tile == 4){
+                    // shroom
+                    
+                    // Draw shroom background
+                    context.fillStyle = "#f7e697";
+                    context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+                    
+                    // Draw the shroom image
+                    var tx = 1;
                     var ty = 2;
                     var tilew = 64;
                     var tileh = 64;
@@ -945,17 +1068,33 @@ window.onload = function() {
 
 
 
+    function invertColors(flipped) { 
+        var canvas = document.getElementById("viewport"); 
+        var context = canvas.getContext("2d");
+        if(flipped){
+            console.log("Flipped is true");
+            context.setTransform(1,0,0,1,0,0);
+        }
+        else{
+            console.log("Flipped is false");
+            context.setTransform(1,0,0,-1,0,canvas.height);
+        }
+
+
         // the css we are going to inject
         var css = 'html {-webkit-filter: invert(100%);' +
             '-moz-filter: invert(100%);' + 
             '-o-filter: invert(100%);' + 
+            '-ms-filter: invert(100%);' 
+
+
         
         head = document.getElementsByTagName('head')[0],
         style = document.createElement('style');
         
         // a hack, so you can "invert back" clicking the bookmarklet again
         if (!window.counter) { window.counter = 1;} else  { window.counter ++;
-        if (window.counter % 2 == 0) { var css ='html {-webkit-filter: invert(0%); -moz-filter:    invert(0%); -o-filter: invert(0%); -ms-filter: invert(0%); }'}
+        if (window.counter % 2 == 0) { var css ='html {-webkit-filter: invert(0%); -moz-filter:    invert(0%); -o-filter: invert(0%); -ms-filter: invert(0%);}'}
          };
         
         style.type = 'text/css';
@@ -967,37 +1106,37 @@ window.onload = function() {
         
         //injecting the css to the head
         head.appendChild(style);
-        };
+    };
     
-        function sound(src) {
-            this.sound = document.createElement("audio");
-            this.sound.src = src;
-            this.sound.setAttribute("preload", "auto");
-            this.sound.setAttribute("controls", "none");
-            this.sound.style.display = "none";
-            document.body.appendChild(this.sound);
-            this.play = function(){
-                this.sound.play();
-            }
-            this.stop = function(){
-                this.sound.pause();
-            }    
+    function sound(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
         }
+        this.stop = function(){
+            this.sound.pause();
+        }    
+    }
 
-        function sound2(src) {
-            this.sound = document.createElement("audio");
-            this.sound.src = src;
-            this.sound.setAttribute("preload", "auto");
-            this.sound.setAttribute("controls", "none");
-            this.sound.style.display = "none";
-            document.body.appendChild(this.sound);
-            this.play = function(){
-                this.sound.play();
-            }
-            this.stop = function(){
-                this.sound.pause();
-            }    
+    function sound2(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
         }
+        this.stop = function(){
+            this.sound.pause();
+        }    
+    }
 
     
     // Call init to start the game
