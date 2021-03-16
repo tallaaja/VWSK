@@ -133,13 +133,21 @@ window.onload = function() {
             var i = Math.floor(Math.random() * (this.columns +1));
             var j = Math.floor(Math.random() * (this.rows +1));
 
-            if(this.tiles[i][j] == 0){
-                this.tiles[i][j] = 1;
-                tilecount++;
+            try{
+                if(this.tiles[i][j] == 0){
+                    this.tiles[i][j] = 1;
+                    tilecount++;                    
+                }  
+                console.log("Tilecount = " + tilecount); 
             }
+            catch(err){
+                //sometimes this.tiles[][] is undefined so this is how we roll
+
+            }
+         
             
             
-            console.log("Tilecount = " + tilecount);
+            
         }
 
 
