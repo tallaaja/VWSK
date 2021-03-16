@@ -33,14 +33,13 @@ window.onload = function() {
         }
     }
 
-    bloodImage = new Image();
-    bloodImage.src = "blood.png";
+
     
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
-    var canvas2 = document.getElementById("foreground")
-    var context2 = canvas2.getContext("2d");
 
+    powerupMusic = new powerUpAudio("music_zapsplat_win_city.mp3");
+    backgroundMusic = new backGroundAudio("bensound-perception.mp3");    
     //highscore variable
     var highscore = 0;
     
@@ -333,7 +332,6 @@ window.onload = function() {
     // Check if we can start a new game
     function tryNewGame() {
         if (gameovertime > gameoverdelay) {
-            context2.clearRect(0, 0, canvas.width, canvas.height);
             newGame();
             gameover = false;
         }
@@ -524,10 +522,9 @@ window.onload = function() {
             
             if (nx >= 0 && nx < level.columns && ny >= 0 && ny < level.rows) {
                 if (level.tiles[nx][ny] == 1) {
-                    stone1 = new sound2("stone1.mp3");
+                    stone1 = new sound("stone1.mp3");
                     stone1.play();
-                    // Collision with a stone
-                    drawBlood();
+                    // Collision with a wall
                     gameover = true;
                 }
                 
@@ -538,9 +535,8 @@ window.onload = function() {
                     
                     if (nx == sx && ny == sy) {
                         // Found a snake part
-                        stone1 = new sound2("stone1.mp3");
+                        stone1 = new sound("stone1.mp3");
                         stone1.play();
-                        drawBlood();
                         gameover = true;
                         break;
                     }
@@ -553,7 +549,9 @@ window.onload = function() {
                     snake.move();
                     
                     // Check collision with an apple
-                    if (level.tiles[nx][ny] == 2) {
+                    if (level.tiles[nx][ny] == 2) {                        
+                        backgroundMusic.volume = 0.1;
+                        backgroundMusic.play();
                         // Remove the apple
                         level.tiles[nx][ny] = 0;
 
@@ -586,8 +584,11 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
-                        mySound2 = new sound2("star.mp3");
+                        mySound2 = new sound("star.mp3");
                         mySound2.play();
+                        powerupMusic.play();
+                        backgroundMusic.stop();
+
 
                         //invertColors(false);
                         
@@ -604,6 +605,8 @@ window.onload = function() {
                         count=count-1;
                         if (count <= 0)
                         {
+                            backgroundMusic.play();
+                            powerupMusic.stop();
                             clearInterval(counter);
                             //invertColors(true);
                             powerup = 0;
@@ -617,7 +620,7 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==4){
                         level.tiles[nx][ny] = 0;
                         shroomisspawned = 0;
-                        mySound2 = new sound2("shroom.mp3");
+                        mySound2 = new sound("shroom.mp3");
                         mySound2.play();
 
                         invertColors(false);
@@ -660,9 +663,8 @@ window.onload = function() {
                 }
                 if (level.tiles[nx][ny] == 1) {
                     // Collision with a wall
-                    stone1 = new sound2("stone1.mp3");
+                    stone1 = new sound("stone1.mp3");
                     stone1.play();
-                    drawBlood();
                     gameover = true;
                 }
                 // Collisions with the snake itself
@@ -673,7 +675,6 @@ window.onload = function() {
                     if (nx == sx && ny == sy) {
 
                         // Found a snake part
-                        drawBlood();
                         gameover = true;
                         break;
                     }
@@ -682,9 +683,14 @@ window.onload = function() {
                     snake.moveOutOfBounds(); 
                     // Check collision with an apple
                     if (level.tiles[nx][ny] == 2) {
+                        backgroundMusic.volume = 0.1;
+                        backgroundMusic.play();
                         // Remove the apple
                         level.tiles[nx][ny] = 0;
                         
+                        //play sound effect 
+                        bite1 = new sound("bite1.mp3");
+                        bite1.play();
                         // Add a new apple
                         addApple();
                         //Power up
@@ -710,9 +716,10 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==3){
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
-                        mySound2 = new sound2("bite3.mp3");
+                        mySound2 = new sound("bite3.mp3");
                         mySound2.play();
-
+                        powerupMusic.play();
+                        backgroundMusic.stop();
                         //invertColors(false);
                         
                         powerup = 1;               
@@ -728,6 +735,8 @@ window.onload = function() {
                         count=count-1;
                         if (count <= 0)
                         {
+                            powerupMusic.stop();
+                            backgroundMusic.play();
                             clearInterval(counter);
                             //invertColors(true);
                             powerup = 0;
@@ -741,7 +750,7 @@ window.onload = function() {
                     if(level.tiles[nx][ny]==4){
                         level.tiles[nx][ny] = 0;
                         shroomisspawned = 0;
-                        mySound2 = new sound2("bite3.mp3");
+                        mySound2 = new sound("bite3.mp3");
                         mySound2.play();
 
                         invertColors(false);
@@ -822,6 +831,9 @@ window.onload = function() {
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
             context.fillRect(0, 0, canvas.width, canvas.height);
             
+            context.fillStyle = "#ffffff";
+            context.font = "24px Verdana";
+            drawCenterText("Press any key to start! Or hold ESC to go to menu.", 0, canvas.height/2, canvas.width);
         }
     }
     
@@ -1154,6 +1166,7 @@ window.onload = function() {
         this.sound.setAttribute("preload", "auto");
         this.sound.setAttribute("controls", "none");
         this.sound.style.display = "none";
+        this.sound.volume = 0.8;
         document.body.appendChild(this.sound);
         this.play = function(){
             this.sound.play();
@@ -1162,13 +1175,13 @@ window.onload = function() {
             this.sound.pause();
         }    
     }
-
-    function sound2(src) {
+    function backGroundAudio(src) {
         this.sound = document.createElement("audio");
         this.sound.src = src;
         this.sound.setAttribute("preload", "auto");
         this.sound.setAttribute("controls", "none");
         this.sound.style.display = "none";
+        this.sound.volume = 0.1;
         document.body.appendChild(this.sound);
         this.play = function(){
             this.sound.play();
@@ -1177,13 +1190,13 @@ window.onload = function() {
             this.sound.pause();
         }    
     }
-
-    function stoneSound(src) {
+    function powerUpAudio(src) {
         this.sound = document.createElement("audio");
         this.sound.src = src;
         this.sound.setAttribute("preload", "auto");
         this.sound.setAttribute("controls", "none");
         this.sound.style.display = "none";
+        this.sound.volume = 0.5;
         document.body.appendChild(this.sound);
         this.play = function(){
             this.sound.play();
@@ -1192,16 +1205,6 @@ window.onload = function() {
             this.sound.pause();
         }    
     }
-    function drawBlood(){
-        context2.drawImage(bloodImage,20,0);
-        context2.fillStyle = "white";
-        context2.textAlign = "center";
-        context2.font = "24px Verdana";
-        
-        context2.fillText("Press any key to start! Or hold ESC to go to menu", canvas2.width/2, canvas2.height/2); 
-
-        
-    } 
 
     
     // Call init to start the game
