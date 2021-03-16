@@ -578,12 +578,15 @@ window.onload = function() {
                         //invertColors(false);
                         
                         powerup = 1;               
-                        var count=5;
+                        var count=500;
 
-                        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+                        var counter=setInterval(timer, 10); //1000 will  run it every 1 second
 
                         function timer()
                         {
+                            if(gameover){
+                                count = 0;
+                            }
                         count=count-1;
                         if (count <= 0)
                         {
@@ -606,12 +609,15 @@ window.onload = function() {
                         invertColors(false);
                         
                         shroomup = 1;               
-                        var count=5;
+                        var count=500;
 
-                        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+                        var counter=setInterval(timer, 10); //1000 will  run it every 1 second
 
                         function timer()
                         {
+                            if(gameover){
+                                count = 0;
+                            }
                         count=count-1;
                         if (count <= 0)
                         {
@@ -694,12 +700,15 @@ window.onload = function() {
                         //invertColors(false);
                         
                         powerup = 1;               
-                        var count=5;
+                        var count=500;
 
-                        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+                        var counter=setInterval(timer, 10); //1000 will  run it every 1 second
 
                         function timer()
                         {
+                            if(gameover){
+                                count = 0;
+                            }
                         count=count-1;
                         if (count <= 0)
                         {
@@ -722,12 +731,15 @@ window.onload = function() {
                         invertColors(false);
                         
                         shroomup = 1;               
-                        var count=5;
+                        var count=500;
 
-                        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+                        var counter=setInterval(timer, 10); //1000 will  run it every 1 second
 
                         function timer()
                         {
+                            if(gameover){
+                                count = 0;
+                            }
                         count=count-1;
                         if (count <= 0)
                         {
@@ -779,6 +791,8 @@ window.onload = function() {
         if (gameover) {
             ispowerspawned = 0;
             shroomisspawned = 0;
+            shroomup = 0;
+            powerup = 0;
             //var hs = document.getElementById("highscore").innerHTML;
             //high score stuff
             //
