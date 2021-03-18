@@ -1,5 +1,17 @@
 window.onload = function() {
+    var levelArray = new Array(20);
+    for (var i=0; i<levelArray.length; i++) {
+        levelArray[i] = new Array(20);
+        for (var j=0;j<20;j++){
+            levelArray[i][j] = new Array(2);
+            levelArray[i][j][0] = Math.floor(Math.random() * 3);
+            levelArray[i][j][1] = 0;
+        }
 
+        
+    
+    }
+       
 
     var difficulty = 0;
     var speed = 0;
@@ -36,11 +48,16 @@ window.onload = function() {
 
     bloodImage = new Image();
     bloodImage.src = "blood.png";
+
+    starEffectImage = new Image();
+    starEffectImage.src = "star.png";
     
     var canvas = document.getElementById("viewport"); 
     var context = canvas.getContext("2d");
     var canvas2 = document.getElementById("foreground")
     var context2 = canvas2.getContext("2d");
+    var starCanvas = document.getElementById("stareffect")
+    var starCanvasContext = starCanvas.getContext("2d");
 
     powerupMusic = new powerUpAudio("music_zapsplat_win_city.mp3");
     backgroundMusic = new backGroundAudio("bensound-perception.mp3");    
@@ -58,6 +75,8 @@ window.onload = function() {
     // Images
     var images = [];
     var tileimage;
+    var images2 = [];
+    var tileimage2;
     
     // Image loading global variables
     var loadcount = 0;
@@ -66,8 +85,25 @@ window.onload = function() {
     
     var flipped = false;
     
+    //create level background array
+    /*
+    var tileArray = new Array(22);
+    for(var i=0;i <22;i++) {
+        tileArray[i] = new Array(22);
+        for(var j=0;j<i;j++) {
+            tileArray[i][j] = new Array(2);
+            tileArray[i][j][0] = Math.floor(Math.random() * 3);
+            tileArray[i][j][1] = Math.floor(Math.random() * 3);
+        }
+        }
+        */
+
+
     // Load images
     function loadImages(imagefiles) {
+
+
+
         // Initialize variables
         loadcount = 0;
         loadtotal = imagefiles.length;
@@ -317,10 +353,12 @@ window.onload = function() {
     
     // Initialize the game
     function init() {
+        
         // Load images
         images = loadImages(["snake-graphics.png"]);
         tileimage = images[0];
-        
+        images2 = loadImages(["tileset2.png"]);
+        tileimage2 = images2[0];
         
         // Add keyboard events
         document.addEventListener("keydown", onKeyDown);
@@ -335,6 +373,8 @@ window.onload = function() {
     
     // Check if we can start a new game
     function tryNewGame() {
+        
+        
         if (gameovertime > gameoverdelay) {
             context2.clearRect(0, 0, canvas.width, canvas.height);
             newGame();
@@ -344,6 +384,7 @@ window.onload = function() {
     }
     
     function newGame() {
+        
         // Initialize the snake
         snake.init(10, 10, 1, speed, 4);
         
@@ -588,6 +629,8 @@ window.onload = function() {
                     }
                     // Check collision with star
                     if(level.tiles[nx][ny]==3){
+                        //start effect
+                        starEffect();
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
                         mySound2 = new sound("star.mp3");
@@ -611,6 +654,7 @@ window.onload = function() {
                         count=count-1;
                         if (count <= 0)
                         {
+                            starCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
                             backgroundMusic.play();
                             powerupMusic.stop();
                             clearInterval(counter);
@@ -721,6 +765,9 @@ window.onload = function() {
                     }
                 // Check collision with star
                     if(level.tiles[nx][ny]==3){
+                        //start effect
+                        starEffect();
+
                         level.tiles[nx][ny] = 0;
                         ispowerspawned = 0;
                         mySound2 = new sound("bite3.mp3");
@@ -742,6 +789,7 @@ window.onload = function() {
                         count=count-1;
                         if (count <= 0)
                         {
+                            starCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
                             powerupMusic.stop();
                             backgroundMusic.play();
                             clearInterval(counter);
@@ -844,22 +892,35 @@ window.onload = function() {
     
     // Draw the level tiles
     function drawLevel() {
+       
+        
         for (var i=0; i<level.columns; i++) {
             for (var j=0; j<level.rows; j++) {
                 // Get the current tile and location
                 var tile = level.tiles[i][j];
                 var tilex = i*level.tilewidth;
                 var tiley = j*level.tileheight;
+                context.fillStyle = "#f7e697";
+                context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+
+               
+                var tx = levelArray[i][j][1];
+                var ty = levelArray[i][j][0];
+                var tilew = 16;
+                var tileh = 16;
+
+                context.drawImage(tileimage2, tx*tilew, ty*tileh, tilew, tileh, tilex, tiley, level.tilewidth, level.tileheight);
+                
                 
                 // Draw tiles based on their type
                 if (tile == 0) {
                     // Empty space
-                    context.fillStyle = "#f7e697";
-                    context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+                    //context.fillStyle = "#c2ffad";
+                    //context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
                 } else if (tile == 1) {
                     // Stones
-                    context.fillStyle = "#f7e697";
-                    context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+                    //context.fillStyle = "#f7e697";
+                    //context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
                     // draw stone 
                     var tx = 1;
                     var ty = 3;
@@ -870,8 +931,8 @@ window.onload = function() {
                     // Apple
                     
                     // Draw apple background
-                    context.fillStyle = "#f7e697";
-                    context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+                    //context.fillStyle = "#f7e697";
+                    //context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
                     
                     // Draw the apple image
                     var tx = 0;
@@ -884,8 +945,8 @@ window.onload = function() {
                     // Star
                     
                     // Draw star background
-                    context.fillStyle = "#f7e697";
-                    context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+                    //context.fillStyle = "#f7e697";
+                    //context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
                     
                     // Draw the apple image
                     var tx = 0;
@@ -898,8 +959,8 @@ window.onload = function() {
                     // shroom
                     
                     // Draw shroom background
-                    context.fillStyle = "#f7e697";
-                    context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
+                    //context.fillStyle = "#f7e697";
+                    //context.fillRect(tilex, tiley, level.tilewidth, level.tileheight);
                     
                     // Draw the shroom image
                     var tx = 1;
@@ -1188,6 +1249,7 @@ window.onload = function() {
         this.sound.style.display = "none";
         this.sound.volume = 0.1;
         document.body.appendChild(this.sound);
+        this.sound.loop = true;
         this.play = function(){
             this.sound.play();
         }
@@ -1218,8 +1280,28 @@ window.onload = function() {
         context2.textAlign = "center";
         context2.font = "24px Verdana";
         
-        context2.fillText("Press any key to start! Or hold ESC to go to menu", canvas2.width/2, canvas2.height/2); 
+        context2.fillText("Press any key to start!", canvas2.width/2, canvas2.height/2); 
     } 
+
+    function starEffect(){
+
+
+        starCanvasContext.globalAlpha = 0.5
+        starCanvasContext.drawImage(starEffectImage,67,-10);
+
+
+        var img = document.getElementById('stareffect');
+        var interval = window.setInterval(function(){
+            if(img.style.visibility == 'hidden'){
+                img.style.visibility = 'visible';
+            }else{
+                img.style.visibility = 'hidden';
+            }
+        }, 500); //the 1000 here is milliseconds and determines how often the interval should be run.
+
+
+    } 
+
 
     
     // Call init to start the game
