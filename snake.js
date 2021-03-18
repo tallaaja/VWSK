@@ -34,13 +34,13 @@ window.onload = function() {
         }
 
         if(difficultytext == "Hard"){
-            difficulty = 4;
+            difficulty = 6;
         }
         else if(difficultytext == "Medium"){
             difficulty = 3;
         }
         else if(difficultytext == "Easy"){
-            difficulty = 2;
+            difficulty = 0;
         }
     }
 
@@ -375,10 +375,16 @@ window.onload = function() {
         
         
         if (gameovertime > gameoverdelay) {
+            document.getElementById("score").innerHTML = "Score: 0";
+            if(highscore < score){
+                document.getElementById("highscore").innerHTML = "Highscore: " + score;
+                highscore = score;
+            }
             context2.clearRect(0, 0, canvas.width, canvas.height);
             newGame();
             backgroundMusic.play();
             gameover = false;
+
         }
     }
     
@@ -611,11 +617,11 @@ window.onload = function() {
                         var seed = Math.floor(Math.random() * 101);
                         var seedShroom = Math.floor(Math.random() * 101);
                         console.log(seed);
-                        if(seed < 80 && powerup == 0 && ispowerspawned == 0){
+                        if(seed < 15 && powerup == 0 && ispowerspawned == 0){
                             addPowerUp();
                             ispowerspawned = 1;
                         }
-                        if(seedShroom < 80 && shroomup == 0 && shroomisspawned == 0){
+                        if(seedShroom < 20 && shroomup == 0 && shroomisspawned == 0){
                             addShroom();
                             shroomisspawned = 1;
                         }
@@ -747,11 +753,11 @@ window.onload = function() {
                         var seedPower = Math.floor(Math.random() * 101);
                         var seedShroom = Math.floor(Math.random() * 101);
                         console.log(seed);
-                        if(seedPower < 80 && powerup == 0 && ispowerspawned == 0){
+                        if(seedPower < 15 && powerup == 0 && ispowerspawned == 0){
                             addPowerUp();
                             ispowerspawned = 1;
                         }
-                        if(seedShroom < 80 && shroomup == 0 && shroomisspawned == 0){
+                        if(seedShroom < 20 && shroomup == 0 && shroomisspawned == 0){
                             addShroom();
                             shroomisspawned = 1;
                         }
@@ -875,14 +881,9 @@ window.onload = function() {
             //var hs = document.getElementById("highscore").innerHTML;
             //high score stuff
             //
-            if(highscore < score){
-                document.getElementById("highscore").innerHTML = "Highscore: " + score;
-                highscore = score;
-            }
             backgroundMusic.stop();
-            powerupMusic.stop();
+            powerupMusic.stop();            
             
-            document.getElementById("score").innerHTML = "Score: 0";
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
             context.fillRect(0, 0, canvas.width, canvas.height);
             
@@ -1277,9 +1278,27 @@ window.onload = function() {
         context2.drawImage(bloodImage,20,0);
         context2.fillStyle = "white";
         context2.textAlign = "center";
-        context2.font = "24px Verdana";
-        
+        context2.font = "24px Verdana";        
         context2.fillText("Press any key to start!", canvas2.width/2, canvas2.height/2); 
+    } 
+
+    function starEffect(){
+
+
+        starCanvasContext.globalAlpha = 0.5
+        starCanvasContext.drawImage(starEffectImage,67,-10);
+
+
+        var img = document.getElementById('stareffect');
+        var interval = window.setInterval(function(){
+            if(img.style.visibility == 'hidden'){
+                img.style.visibility = 'visible';
+            }else{
+                img.style.visibility = 'hidden';
+            }
+        }, 500); //the 1000 here is milliseconds and determines how often the interval should be run.
+
+
     } 
 
     function starEffect(){
