@@ -1,4 +1,6 @@
 window.onload = function() {
+
+
     var levelArray = new Array(20);
     for (var i=0; i<levelArray.length; i++) {
         levelArray[i] = new Array(20);
@@ -7,9 +9,6 @@ window.onload = function() {
             levelArray[i][j][0] = Math.floor(Math.random() * 3);
             levelArray[i][j][1] = 0;
         }
-
-        
-    
     }
        
 
