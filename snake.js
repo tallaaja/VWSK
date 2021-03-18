@@ -23,13 +23,13 @@ window.onload = function() {
         }
 
         if(difficultytext == "Hard"){
-            difficulty = 4;
+            difficulty = 6;
         }
         else if(difficultytext == "Medium"){
             difficulty = 3;
         }
         else if(difficultytext == "Easy"){
-            difficulty = 2;
+            difficulty = 0;
         }
     }
 
@@ -582,11 +582,11 @@ window.onload = function() {
                         var seed = Math.floor(Math.random() * 101);
                         var seedShroom = Math.floor(Math.random() * 101);
                         console.log(seed);
-                        if(seed < 80 && powerup == 0 && ispowerspawned == 0){
+                        if(seed < 15 && powerup == 0 && ispowerspawned == 0){
                             addPowerUp();
                             ispowerspawned = 1;
                         }
-                        if(seedShroom < 80 && shroomup == 0 && shroomisspawned == 0){
+                        if(seedShroom < 20 && shroomup == 0 && shroomisspawned == 0){
                             addShroom();
                             shroomisspawned = 1;
                         }
@@ -718,11 +718,11 @@ window.onload = function() {
                         var seedPower = Math.floor(Math.random() * 101);
                         var seedShroom = Math.floor(Math.random() * 101);
                         console.log(seed);
-                        if(seedPower < 80 && powerup == 0 && ispowerspawned == 0){
+                        if(seedPower < 15 && powerup == 0 && ispowerspawned == 0){
                             addPowerUp();
                             ispowerspawned = 1;
                         }
-                        if(seedShroom < 80 && shroomup == 0 && shroomisspawned == 0){
+                        if(seedShroom < 20 && shroomup == 0 && shroomisspawned == 0){
                             addShroom();
                             shroomisspawned = 1;
                         }
