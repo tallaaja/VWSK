@@ -341,10 +341,16 @@ window.onload = function() {
     // Check if we can start a new game
     function tryNewGame() {
         if (gameovertime > gameoverdelay) {
+            document.getElementById("score").innerHTML = "Score: 0";
+            if(highscore < score){
+                document.getElementById("highscore").innerHTML = "Highscore: " + score;
+                highscore = score;
+            }
             context2.clearRect(0, 0, canvas.width, canvas.height);
             newGame();
             backgroundMusic.play();
             gameover = false;
+
         }
     }
     
@@ -840,14 +846,9 @@ window.onload = function() {
             //var hs = document.getElementById("highscore").innerHTML;
             //high score stuff
             //
-            if(highscore < score){
-                document.getElementById("highscore").innerHTML = "Highscore: " + score;
-                highscore = score;
-            }
             backgroundMusic.stop();
-            powerupMusic.stop();
+            powerupMusic.stop();            
             
-            document.getElementById("score").innerHTML = "Score: 0";
             context.fillStyle = "rgba(0, 0, 0, 0.5)";
             context.fillRect(0, 0, canvas.width, canvas.height);
             
@@ -1229,8 +1230,7 @@ window.onload = function() {
         context2.drawImage(bloodImage,20,0);
         context2.fillStyle = "white";
         context2.textAlign = "center";
-        context2.font = "24px Verdana";
-        
+        context2.font = "24px Verdana";        
         context2.fillText("Press any key to start!", canvas2.width/2, canvas2.height/2); 
     } 
 
